@@ -25,9 +25,9 @@
             <td>
                 <a href="{{url('wechat/deltag',['id'=>$v['id']])}}">删除</a> | 
                 <a href="{{url('wechat/edtag',['id'=>$v['id']])}}">修改</a> |
-                <a href="{{url('/wechat/tag_openid_list')}}?tagid={{$v['id']}}">粉丝列表</a> |
+                <a href="{{url('/wechat/user_tag')}}?tagid={{$v['id']}}">粉丝列表</a> |
                 <a href="{{url('/wechat/get_user_list')}}?tagid={{$v['id']}}">粉丝打标签</a> |
-                <a href="{{url('/wechat/push_tag_message')}}?tagid={{$v['id']}}">推送消息</a>
+                <a href="{{url('/wechat/pushtag')}}?tagid={{$v['id']}}">推送消息</a>
             </td>
         </tr>
         @endforeach

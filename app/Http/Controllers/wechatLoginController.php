@@ -3,9 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use DB;
+use App\Tools\Tools;
 class wechatLoginController extends Controller
 {
+    public $tools;
+    public function __construct(Tools $tools)
+    {
+        $this->tools = $tools;
+    }
     public function login()
     {
     	return view('Wechat.login');
@@ -21,33 +27,37 @@ class wechatLoginController extends Controller
         $req = $request->all();
         $result = file_get_contents('https://api.weixin.qq.com/sns/oauth2/access_token?appid='.env('WECHAT_APPID').'&secret='.env('WECHAT_APPSECRET').'&code='.$req['code'].'&grant_type=authorization_code');
         $re = json_decode($result,1);
-       $user_info = file_get_contents('https://api.weixin.qq.com/sns/userinfo?access_token='.$re['access_token'].'&openid='.$re['openid'].'&lang=zh_CN');
-       $wechat_user_info = json_decode($user_info,1);
-        $openid = $re['openid'];
-        $wechat_info = DB::connection('mysql_cart')->table('user_wechat')->where(['openid'=>$openid])->first();
-        dd($wechat_info);
+        // dd($re);
+        $res = file_get_contents('https://api.weixin.qq.com/sns/oauth2/refresh_token?appid='.env('WECHAT_APPID').'&grant_type=refresh_token&refresh_token='.$re['refresh_token']);
+        $ree = json_decode($res,1);
+        // dd($ree);
+        $user_info = file_get_contents('https://api.weixin.qq.com/sns/userinfo?access_token='.$ree['access_token'].'&openid='.$ree['openid'].'&lang=zh_CN');
+        $user=json_decode($user_info,1);
+        // dd($user);
+        $openid=$ree['openid'];
+        $wechat_info = DB::table('wechat_user')->where(['openid'=>$openid])->first();
         if(!empty($wechat_info)){
-            //存在,登陆
+//            存在
             $request->session()->put('uid',$wechat_info->uid);
-            echo "ok";
-           // return redirect('');  //主页
+//            echo "ok";
+            return redirect('/wechat/get_user_list');
         }else{
-            //不存在,注册,登陆
-            //插入user表数据一条
-            DB::connection('mysql_cart')->beginTransaction();  //打开事物
-            $uid = DB::connection('mysql_cart')->table('user')->insertGetId([
-                'name'=>$wechat_user_info['nickname'],
+//            不存在
+//            插入user表数据一条
+            DB::beginTransaction();//打开事务
+            $uid = DB::table('wuser')->insertGetId([
+                'name'=>$user['nickname'],
                 'password'=>'',
                 'reg_time'=>time()
             ]);
-            $insert_result = DB::connection('mysql_cart')->table('user_wechat')->insert([
+            $insert_result = DB::table('wechat_user')->insert([
                 'uid'=>$uid,
                 'openid'=>$openid
             ]);
-            //登陆操作
-            $request->session()->put('uid',$wechat_info->uid);
-            echo "ok";
-            // return redirect('');  //主页
+//            登录操作
+            $request->session()->put('uid',$wechat_info['uid']);
+//            echo "ok";
+            return redirect('/wechat/get_user_list');
         }
     }
 }

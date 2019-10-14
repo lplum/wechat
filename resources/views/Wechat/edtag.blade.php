@@ -9,7 +9,7 @@
 </head>
 <body>
 <center>
-    <form action="{{url('wechat/do_edit_tag')}}" method="post">
+    <form action="{{url('wechat/edit_tag')}}" method="post">
         @csrf
         <input type="hidden" name="tag_id" value="{{$id}}">
         标签名:<input type="text" name="name" value="{{$name}}">

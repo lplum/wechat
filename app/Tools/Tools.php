@@ -9,28 +9,30 @@ class Tools {
     }
     public function curl_post($url,$data)
     {
-        $ch = curl_init();
-        //指定URL
-        curl_setopt($ch, CURLOPT_URL, $url);
-        //设定请求后返回结果
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        //声明使用POST方式来进行发送
-        curl_setopt($ch, CURLOPT_POST, 1);
-        //发送什么数据
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        //忽略证书
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-        //忽略header头信息
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-        //设置超时时间
-        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-        //发送请求
-        $output = curl_exec($ch);
-        //关闭curl
-        curl_close($ch);
-        //返回数据
-        return $output;
+        $curl = curl_init($url);
+        curl_setopt($curl,CURLOPT_RETURNTRANSFER,true);
+        curl_setopt($curl,CURLOPT_SSL_VERIFYPEER,false);
+        curl_setopt($curl,CURLOPT_SSL_VERIFYHOST,false);
+        curl_setopt($curl,CURLOPT_POST,true);
+        curl_setopt($curl,CURLOPT_POSTFIELDS,$data);
+        $result = curl_exec($curl);
+        curl_close($curl);
+        return $result;
+    }
+    /**
+     * get
+     * @param $url
+     * @return bool|string
+     */
+    public function curl_get($url)
+    {
+        $curl = curl_init($url);
+        curl_setopt($curl,CURLOPT_RETURNTRANSFER,true);
+        curl_setopt($curl,CURLOPT_SSL_VERIFYPEER,false);
+        curl_setopt($curl,CURLOPT_SSL_VERIFYHOST,false);
+        $result = curl_exec($curl);
+        curl_close($curl);
+        return $result;
     }
     /**
      * 获取access_token
