@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use DB;
 use App\Tools\Tools;
+use App\Model\User;
+use Illuminate\Support\Facades\Storage;
 class wechatController extends Controller
 {
     public $tools;
@@ -11,13 +13,43 @@ class wechatController extends Controller
     {
         $this->tools = $tools;
     }
+    public function wechat_list()
+    {
+        $user_info = User::get();
+        return view('Wechat.wechatList',['user_info'=>$user_info]);
+    }
+    public function create_qrcode(Request $request)
+    {
+        $req = $request->all();
+        $url = 'https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token='.$this->tools->get_wechat_access_token();
+        //{"expire_seconds": 604800, "action_name": "QR_SCENE", "action_info": {"scene": {"scene_id": 123}}}
+        $data = [
+            'expire_seconds'=> 30 * 24 * 3600,
+            'action_name'=>'QR_SCENE',
+            'action_info'=>[
+                'scene'=>[
+                    'scene_id'=>$req['uid']
+                ]
+            ]
+        ];
+        $re = $this->tools->curl_post($url,json_encode($data));
+        $result = json_decode($re,1);
+        $qrcode_url = 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket='.$result['ticket'];
+        $qrcode_source = $this->tools->curl_get($qrcode_url);
+        $qrcode_name = $req['uid'].rand(10000,99999).'.jpg';
+        Storage::put('wechat/qrcode/'.$qrcode_name, $qrcode_source);
+        User::where(['id'=>$req['uid']])->update([
+            'qrcode_url'=>'/storage/wechat/qrcode/'.$qrcode_name
+        ]);
+        return redirect('/wechat/wechat_list');
+    }
     /**
      * 调用频次清0
      */
     public function  clear_api(){
         $url = 'https://api.weixin.qq.com/cgi-bin/clear_quota?access_token='.$this->get_wechat_access_token();
         $data = ['appid'=>env('WECHAT_APPID')];
-        $this->curl_post($url,json_encode($data));
+        $this->tools->curl_post($url,json_encode($data));
     }
 	public function get_user_list(Request $request)
     {
@@ -188,8 +220,8 @@ class wechatController extends Controller
             ],
             'msgtype'=>'text'
         ];
-        $re = $this->tools->curl_post($url,json_encode($data));
+        $re = $this->tools->curl_post($url,json_encode($data,JSON_UNESCAPED_UNICODE));
         $result = json_decode($re,1);
-        dd($result);
+        return redirect('/wechat/taglist');
     }
 }

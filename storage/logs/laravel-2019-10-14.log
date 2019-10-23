@@ -1,4 +1,0 @@
-[2019-10-14 08:50:57] local.ERROR: Maximum execution time of 30 seconds exceeded {"exception":"[object] (Symfony\\Component\\Debug\\Exception\\FatalErrorException(code: 1): Maximum execution time of 30 seconds exceeded at D:\\wnnp\\www\\zxc\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php:68)
-[stacktrace]
-#0 {main}
-"} 

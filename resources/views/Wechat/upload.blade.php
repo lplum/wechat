@@ -4,13 +4,13 @@
 </head>
 <body>
 <center>
-    <form action="{{url('wechat/do_upload')}}" method="post" enctype="multipart/form-data">
+    <form action="{{url('wechat/doupload')}}" method="post" enctype="multipart/form-data">
         @csrf
         <select name="type" id="">
-            <option value="1">图片</option>
-            <option value="2">音频</option>
-            <option value="3">视频</option>
-            <option value="4">缩略图</option>
+            <option value="image">图片</option>
+            <option value="voice">音频</option>
+            <option value="video">视频</option>
+            <option value="thumb">缩略图</option>
         </select>
         <input type="file" name="file_name" value="">
         <input type="submit" value="提交">

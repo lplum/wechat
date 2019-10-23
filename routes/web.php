@@ -14,6 +14,7 @@
 Route::get('/', function () {
     return view('welcome');
 });
+Route::any('/wechat/event','EventController@event');
 Route::get('/wechat/get_access_token','wechatController@get_access_token');
 Route::get('/wechat/get_user_list','wechatController@get_user_list');
 Route::get('/wechat/get_user_detail/{openid}','wechatController@get_user_detail');
@@ -31,3 +32,21 @@ Route::post('/wechat/usertaglist','wechatController@usertaglist'); //用户打�
 Route::get('/wechat/user_tag','wechatController@user_tag'); //标签粉丝列表
 Route::get('/wechat/pushtag','wechatController@push_tag_message'); //推送消息
 Route::post('/wechat/do_push','wechatController@do_push_tag_message'); //推送消息
+Route::get('/wechat/upload','uploadController@upload'); //上传
+Route::post('/wechat/doupload','uploadController@doupload'); //上传操作
+Route::get('/wechat/sourcelist','uploadController@source_list');
+Route::get('/wechat/uploadlist','uploadController@uploadlist');//素材列表
+Route::get('/wechat/download','uploadController@download');//下载素材
+Route::get('/wechat/menu_list','menuController@menu_list'); //菜单列表
+Route::post('/wechat/create_menu','menuController@create_menu'); //菜单
+Route::get('/wechat/load_menu','menuController@load_menu'); //刷新菜单
+Route::get('/zhou/login','ZhoukaoController@login'); 
+Route::get('/zhou/wlogin','ZhoukaoController@wechatLogin');
+Route::get('/zhou/code','ZhoukaoController@code');
+Route::group(['middleware' => ['login'],'prefix'=>'/zhou'], function () {
+    Route::get('/get_user_list','ZhoukaoController@get_user_list');
+    Route::any('/push','ZhoukaoController@push_tag_message'); //推送消息
+	Route::post('/do_push','ZhoukaoController@do_push_tag_message'); //推送消息
+});
+Route::get('/wechat/wechat_list','wechatController@wechat_list');
+Route::get('/wechat/create_qrcode','wechatController@create_qrcode');

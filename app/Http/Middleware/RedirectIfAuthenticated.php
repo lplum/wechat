@@ -17,8 +17,11 @@ class RedirectIfAuthenticated
      */
     public function handle($request, Closure $next, $guard = null)
     {
-        if (Auth::guard($guard)->check()) {
-            return redirect('/home');
+        if ($request->session()->has('u_id')) {
+//            echo "您的用户名为".session('user_name');
+//            echo "<br />";
+        }else{
+            return redirect('/zhou/login');
         }
 
         return $next($request);

@@ -1,5 +1,6 @@
 <?php
 namespace App\Tools;
+use Illuminate\Support\Facades\Cache;
 class Tools {
     public $redis;
     public function __construct()
@@ -67,5 +68,36 @@ class Tools {
             $this->redis->set($access_api_key,$re['ticket'],$re['expires_in']);  //加入缓存
             return $re['ticket'];
         }
+    }
+    public function tag_list()
+    {
+        $url = 'https://api.weixin.qq.com/cgi-bin/tags/get?access_token='.$this->get_access_token();
+        $re = $this->curl_get($url);
+        $result = json_decode($re,1);
+        return $result;
+    }
+    /**
+     * 根据openid获取用户的基本新
+     * @param $openid
+     * @return mixed
+     */
+    public function get_wechat_user($openid)
+    {
+        $url = 'https://api.weixin.qq.com/cgi-bin/user/info?access_token='.$this->get_access_token().'&openid='.$openid.'&lang=zh_CN';
+        $re = file_get_contents($url);
+        $result = json_decode($re,1);
+        return $result;
+    }
+    public function wechat_curl_file($url,$data)
+    {
+        $curl = curl_init($url);
+        curl_setopt($curl,CURLOPT_RETURNTRANSFER,true);
+        curl_setopt($curl,CURLOPT_SSL_VERIFYPEER,false);
+        curl_setopt($curl,CURLOPT_SSL_VERIFYHOST,false);
+        curl_setopt($curl,CURLOPT_POST,true);
+        curl_setopt($curl,CURLOPT_POSTFIELDS,$data);
+        $result = curl_exec($curl);
+        curl_close($curl);
+        return $result;
     }
 }
